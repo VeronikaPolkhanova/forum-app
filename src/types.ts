@@ -1,6 +1,10 @@
+import { Role } from './constants';
+
 export interface User {
   id: number;
   name: string;
+  email: string;
+  role: Role;
 }
 
 export interface Comment {
@@ -22,6 +26,8 @@ export interface Post {
   comments?: Comment[];
 }
 
-export type Role = {
-  role: 'USER' | 'ADMIN';
-};
+export interface AddCommentInput {
+  email: string;
+  body: string;
+  name: string;
+}

@@ -1,18 +1,20 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 import { fetchPosts, fetchUsers } from '../api/posts';
-import { Post, User, Comment } from '../types';
+import { Direction } from '../constants';
+import { Post, User, Comment, AddCommentInput } from '../types';
 
 interface ForumContextType {
   posts: Post[];
   users: User[];
   loading: boolean;
   error: string | null;
-  refresh: () => void;
+  addComment: (postId: number, data: AddCommentInput) => void;
   likePost: (postId: number) => void;
   dislikePost: (postId: number) => void;
   toggleFavorite: (postId: number) => void;
   deletePost: (postId: number) => void;
+  movePost: (index: number, direction: Direction) => void;
 }
 
 const ForumContext = createContext<ForumContextType | undefined>(undefined);
@@ -61,16 +63,54 @@ export const ForumProvider = ({ children }: { children: ReactNode }) => {
     cachedPosts = posts.map((p) => (p.id === postId ? updater(p) : p));
   };
 
+  const addComment = (postId: number, data: AddCommentInput) => {
+    setPosts((prev) =>
+      prev.map((post) =>
+        post.id === postId
+          ? {
+              ...post,
+              comments: [
+                ...(post.comments || []),
+                {
+                  id: Date.now(),
+                  postId,
+                  name: data.name,
+                  email: data.email,
+                  body: data.body,
+                },
+              ],
+            }
+          : post,
+      ),
+    );
+  };
+
   const likePost = (postId: number) =>
-    updatePost(postId, (post) => ({ ...post, likes: (post.likes || 0) + 1 }));
+    updatePost(postId, (post) => ({
+      ...post,
+      likes: post.likes > 0 ? post.likes - 1 : post.likes + 1,
+    }));
 
   const dislikePost = (postId: number) =>
-    updatePost(postId, (post) => ({ ...post, dislikes: (post.dislikes || 0) + 1 }));
+    updatePost(postId, (post) => ({
+      ...post,
+      dislikes: post.dislikes > 0 ? post.dislikes - 1 : post.dislikes + 1,
+    }));
 
-  const toggleFavorite = (postId: number) =>
-    updatePost(postId, (post) => ({ ...post, favorite: !post.favorite }));
+  const toggleFavorite = (id: number) => {
+    setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, favorite: !p.favorite } : p)));
+  };
 
   const deletePost = (postId: number) => setPosts((prev) => prev.filter((p) => p.id !== postId));
+
+  const movePost = (index: number, direction: Direction) => {
+    const nextIndex = direction === Direction.up ? index - 1 : index + 1;
+    setPosts((prev) => {
+      const arr = [...prev];
+      [arr[index], arr[nextIndex]] = [arr[nextIndex], arr[index]];
+      return arr;
+    });
+  };
 
   useEffect(() => {
     if (!cachedPosts || !cachedUsers) {
@@ -85,11 +125,12 @@ export const ForumProvider = ({ children }: { children: ReactNode }) => {
         users,
         loading,
         error,
-        refresh: loadData,
+        addComment,
         likePost,
         dislikePost,
         toggleFavorite,
         deletePost,
+        movePost,
       }}
     >
       {children}
