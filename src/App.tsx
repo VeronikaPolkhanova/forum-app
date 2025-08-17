@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
+import AdminRoute from './components/AdminRoute';
 import Header from './components/Header';
 import Layout from './components/Layout';
 import PrivateRoute from './components/ProtectedRoute';
@@ -10,6 +11,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Post from './pages/Post';
 import Profile from './pages/Profile';
+import Users from './pages/Users';
 
 function App() {
   return (
@@ -50,6 +52,14 @@ function App() {
                   <PrivateRoute>
                     <Profile />
                   </PrivateRoute>
+                }
+              />
+              <Route
+                path="/users"
+                element={
+                  <AdminRoute>
+                    <Users />
+                  </AdminRoute>
                 }
               />
             </Routes>

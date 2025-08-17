@@ -15,6 +15,7 @@ interface ForumContextType {
   toggleFavorite: (postId: number) => void;
   deletePost: (postId: number) => void;
   movePost: (index: number, direction: Direction) => void;
+  updateUser: (userId: number, data: Partial<User>) => void;
 }
 
 const ForumContext = createContext<ForumContextType | undefined>(undefined);
@@ -112,6 +113,10 @@ export const ForumProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const updateUser = (userId: number, data: Partial<User>) => {
+    setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, ...data } : u)));
+  };
+
   useEffect(() => {
     if (!cachedPosts || !cachedUsers) {
       loadData();
@@ -131,6 +136,7 @@ export const ForumProvider = ({ children }: { children: ReactNode }) => {
         toggleFavorite,
         deletePost,
         movePost,
+        updateUser,
       }}
     >
       {children}

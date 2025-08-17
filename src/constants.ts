@@ -30,6 +30,8 @@ export const text = {
   login: 'Login',
   saved: 'Saved',
   email: 'Email',
+  users: 'Users',
+  cancel: 'Cancel',
 };
 
 export const registeredUsers = [

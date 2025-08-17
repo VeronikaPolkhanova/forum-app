@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { text } from '../constants';
+import { Role, text } from '../constants';
 import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
@@ -20,6 +20,11 @@ const Header = () => {
         <Link to="/profile" className="hover:underline">
           {text.edit}
         </Link>
+        {user.role === Role.admin && (
+          <Link to="/users" className="hover:underline">
+            {text.users}
+          </Link>
+        )}
       </nav>
       <div className="flex items-center gap-4">
         <p>
