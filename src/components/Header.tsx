@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 
-import { Role, text } from '../constants';
+import { text } from '../constants';
 import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
-  const { user, logout } = useAuth();
+  const { user, isAdmin, logout } = useAuth();
   if (!user) return null;
 
   const links = [
@@ -13,7 +13,7 @@ const Header = () => {
     { to: '/profile', label: text.edit },
   ];
 
-  if (user.role === Role.admin) {
+  if (isAdmin) {
     links.push({ to: '/users', label: text.users });
   }
 

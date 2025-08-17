@@ -33,3 +33,9 @@ export interface AddCommentInput {
   body: string;
   name: string;
 }
+
+export interface AddPostInput {
+  userId: number;
+  title: string;
+  body: string;
+}

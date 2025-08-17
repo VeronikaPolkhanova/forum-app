@@ -2,13 +2,14 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 
 import { fetchPosts, fetchUsers } from '../api/posts';
 import { Direction, BASE_URL } from '../constants';
-import { Post, User, Comment, AddCommentInput } from '../types';
+import { Post, User, Comment, AddCommentInput, AddPostInput } from '../types';
 
 interface ForumContextType {
   posts: Post[];
   users: User[];
   loading: boolean;
   error: string | null;
+  addPost: (data: AddPostInput) => void;
   addComment: (postId: number, data: AddCommentInput) => void;
   likePost: (postId: number, userId: number) => void;
   dislikePost: (postId: number, userId: number) => void;
@@ -67,6 +68,26 @@ export const ForumProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const addPost = (data: AddPostInput) => {
+    const newPost: Post = {
+      id: Date.now(),
+      userId: data.userId,
+      title: data.title,
+      body: data.body,
+      likes: 0,
+      dislikes: 0,
+      favorite: false,
+      comments: [],
+      likedBy: [],
+      dislikedBy: [],
+    };
+    setPosts((prev) => {
+      const updated = [newPost, ...prev];
+      cachedPosts = updated;
+      return updated;
+    });
+  };
+
   const addComment = (postId: number, data: AddCommentInput) => {
     updatePost(postId, (post) => ({
       ...post,
@@ -85,15 +106,12 @@ export const ForumProvider = ({ children }: { children: ReactNode }) => {
       let newDislikedBy = [...post.dislikedBy];
 
       if (hasLiked) {
-        // убрать лайк
         newLikes -= 1;
         newLikedBy = newLikedBy.filter((id) => id !== userId);
       } else {
-        // добавить лайк
         newLikes += 1;
         newLikedBy.push(userId);
 
-        // если был дизлайк, убрать его
         if (hasDisliked) {
           newDislikes -= 1;
           newDislikedBy = newDislikedBy.filter((id) => id !== userId);
@@ -189,6 +207,7 @@ export const ForumProvider = ({ children }: { children: ReactNode }) => {
         users,
         loading,
         error,
+        addPost,
         addComment,
         likePost,
         dislikePost,

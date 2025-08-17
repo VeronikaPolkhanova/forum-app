@@ -1,7 +1,6 @@
 import { JSX } from 'react';
 import { Navigate } from 'react-router-dom';
 
-import { Role } from '../constants';
 import { useAuth } from '../context/AuthContext';
 
 interface AdminRouteProps {
@@ -9,9 +8,9 @@ interface AdminRouteProps {
 }
 
 const AdminRoute = ({ children }: AdminRouteProps) => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
 
-  if (!user || user.role !== Role.admin) {
+  if (!user || !isAdmin) {
     return <Navigate to="/" replace />;
   }
 

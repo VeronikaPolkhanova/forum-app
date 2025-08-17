@@ -32,6 +32,8 @@ export const text = {
   email: 'Email',
   users: 'Users',
   cancel: 'Cancel',
+  title: 'Title',
+  body: 'Post body',
 };
 
 export const registeredUsers = [

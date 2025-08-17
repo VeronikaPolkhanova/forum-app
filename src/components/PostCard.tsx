@@ -13,7 +13,9 @@ interface PostCardProps {
 
 const PostCard = ({ post, onUp, onDown }: PostCardProps) => {
   const { likePost, dislikePost, toggleFavorite, deletePost } = useForum();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
+
+  const showDelete = post.userId === user?.id || isAdmin;
 
   return (
     <div className="mb-4 rounded border p-4 shadow">
@@ -28,7 +30,7 @@ const PostCard = ({ post, onUp, onDown }: PostCardProps) => {
         <button onClick={() => likePost(post.id, user?.id ?? -1)}>👍 {post.likes}</button>
         <button onClick={() => dislikePost(post.id, user?.id ?? -1)}>👎 {post.dislikes}</button>
         <button onClick={() => toggleFavorite(post.id)}>{post.favorite ? '★' : '☆'}</button>
-        {post.userId === user?.id && <button onClick={() => deletePost(post.id)}>🗑️</button>}
+        {showDelete && <button onClick={() => deletePost(post.id)}>🗑️</button>}
       </div>
       <div className="flex gap-2">
         {onUp && (
