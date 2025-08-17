@@ -1,25 +1,24 @@
-import { Post, User, Comment } from "../types";
+import { BASE_URL } from '../constants';
+import { Post, User, Comment } from '../types';
 
-export const fetchUsers = async (): Promise<User[]> => {
-  const res = await fetch("https://jsonplaceholder.typicode.com/users");
+const getJson = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('API error');
   return res.json();
 };
 
+export const fetchUsers = () => getJson(`${BASE_URL}/users`) as Promise<User[]>;
+
 export const fetchPosts = async (): Promise<Post[]> => {
-  const res = await fetch("https://jsonplaceholder.typicode.com/posts");
-  const data = await res.json();
-  return data.map((p: any) => ({
+  const rawPosts = (await getJson(`${BASE_URL}/posts`)) as Post[];
+  return rawPosts.map((p) => ({
     ...p,
     likes: 0,
     dislikes: 0,
     favorite: false,
-    comments: [],
+    comments: [] as Comment[],
   }));
 };
 
-export const fetchComments = async (postId: number): Promise<Comment[]> => {
-  const res = await fetch(
-    `https://jsonplaceholder.typicode.com/posts/${postId}/comments`
-  );
-  return res.json();
-};
+export const fetchComments = (postId: number) =>
+  getJson(`${BASE_URL}/posts/${postId}/comments`) as Promise<Comment[]>;

@@ -37,11 +37,11 @@ const UserModal: FC<Props> = ({ user, onClose, onSave }) => {
             placeholder={text.name}
           />
           <input
-            name={text.email}
+            name="email"
             value={formData.email}
             onChange={handleChange}
             className="border p-2"
-            placeholder="Email"
+            placeholder={text.email}
           />
           <div className="mt-4 flex justify-end gap-3">
             <button onClick={onClose} className="rounded border px-3 py-1">

@@ -15,25 +15,30 @@ const Home = () => {
 
   const filteredPosts = filter ? posts.filter((p) => p.userId === filter) : posts;
 
+  const renderPostCard = (post: (typeof posts)[0], index: number) => {
+    const canMoveUp = index > 0 && !filter;
+    const canMoveDown = index < posts.length - 1 && !filter;
+
+    return (
+      <PostCard
+        key={post.id}
+        post={post}
+        onLike={likePost}
+        onDislike={dislikePost}
+        onFavorite={toggleFavorite}
+        onDelete={deletePost}
+        onUp={canMoveUp ? () => movePost(index, Direction.up) : undefined}
+        onDown={canMoveDown ? () => movePost(index, Direction.down) : undefined}
+      />
+    );
+  };
+
   return (
     <div className="p-6">
-      <div className="flex justify-end">
+      <div className="mb-4 flex justify-end">
         <UserSelect users={users} value={filter} onChange={setFilter} />
       </div>
-      {filteredPosts.map((post, index) => (
-        <PostCard
-          key={post.id}
-          post={post}
-          onLike={likePost}
-          onDislike={dislikePost}
-          onFavorite={toggleFavorite}
-          onDelete={deletePost}
-          onUp={index > 0 && !filter ? () => movePost(index, Direction.up) : undefined}
-          onDown={
-            index < posts.length - 1 && !filter ? () => movePost(index, Direction.down) : undefined
-          }
-        />
-      ))}
+      {filteredPosts.map(renderPostCard)}
     </div>
   );
 };

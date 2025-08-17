@@ -13,15 +13,17 @@ const PostPage = () => {
   const [newComment, setNewComment] = useState('');
 
   const postId = id ? parseInt(id, 10) : null;
-  const post = postId !== null ? posts.find((p) => p.id === postId) : undefined;
+  const post = posts.find((p) => p.id === postId);
 
   const handleAdd = () => {
-    if (!post) return;
+    if (!post || !newComment.trim()) return;
+
     addComment(post.id, {
-      email: user?.email ?? 'Guest',
-      body: newComment,
       name: user?.name ?? 'Guest',
+      email: user?.email ?? 'Guest',
+      body: newComment.trim(),
     });
+
     setNewComment('');
   };
 
@@ -43,11 +45,15 @@ const PostPage = () => {
       <div className="mt-4 flex flex-col items-end gap-2">
         <textarea
           className="w-full border p-2"
+          placeholder={text.write_comment}
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          placeholder={text.write_comment}
         />
-        <button className="w-fit rounded bg-blue-500 px-2 py-1 text-white" onClick={handleAdd}>
+        <button
+          className="w-fit rounded bg-blue-500 px-2 py-1 text-white disabled:opacity-50"
+          onClick={handleAdd}
+          disabled={!newComment.trim()}
+        >
           {text.post}
         </button>
       </div>

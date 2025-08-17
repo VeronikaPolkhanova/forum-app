@@ -38,3 +38,5 @@ export const registeredUsers = [
   { id: 0, email: 'admin@example.com', name: 'admin', role: Role.admin, password: '123' },
   { id: 1, email: 'Sincere@april.biz', name: 'Leanne Graham', role: Role.user, password: '123' },
 ];
+
+export const BASE_URL = 'https://jsonplaceholder.typicode.com';

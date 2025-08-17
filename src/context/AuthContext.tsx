@@ -16,21 +16,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
   const login = (name: string, password: string) => {
-    const user = registeredUsers.find((u) => u.name === name);
-    if (user && user.password === password) {
-      setUser({ id: user.id, name, role: user.role, email: user.email });
-    } else {
-      alert(text.wrong_data);
-    }
+    const foundUser = registeredUsers.find((u) => u.name === name && u.password === password);
+    if (!foundUser) return alert(text.wrong_data);
+    setUser({
+      id: foundUser.id,
+      name: foundUser.name,
+      role: foundUser.role,
+      email: foundUser.email,
+    });
   };
 
   const logout = () => setUser(null);
-
-  const updateUser = (data: Partial<User>) => {
-    if (user) {
-      setUser({ ...user, ...data });
-    }
-  };
+  const updateUser = (data: Partial<Omit<User, 'id'>>) => user && setUser({ ...user, ...data });
 
   return (
     <AuthContext.Provider value={{ user, login, logout, updateUser }}>

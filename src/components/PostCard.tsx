@@ -14,6 +14,44 @@ interface Props {
   onDown?: () => void;
 }
 
+const PostActions = ({
+  post,
+  isEditable,
+  onLike,
+  onDislike,
+  onFavorite,
+  onDelete,
+}: {
+  post: Post;
+  isEditable: boolean;
+  onLike?: (id: number) => void;
+  onDislike?: (id: number) => void;
+  onFavorite: (id: number) => void;
+  onDelete?: (id: number) => void;
+}) => (
+  <div className="mt-2 flex justify-end gap-2">
+    {onLike && <button onClick={() => onLike(post.id)}>👍 {post.likes}</button>}
+    {onDislike && <button onClick={() => onDislike(post.id)}>👎 {post.dislikes}</button>}
+    <button onClick={() => onFavorite(post.id)}>{post.favorite ? '★' : '☆'}</button>
+    {onDelete && isEditable && <button onClick={() => onDelete(post.id)}>🗑️</button>}
+  </div>
+);
+
+const PostAdminControls = ({ onUp, onDown }: { onUp?: () => void; onDown?: () => void }) => (
+  <div className="mt-2 flex items-center gap-4">
+    {onUp && (
+      <button className="w-fit rounded bg-blue-500 px-2 py-1 text-white" onClick={onUp}>
+        {text.up}
+      </button>
+    )}
+    {onDown && (
+      <button className="w-fit rounded bg-blue-500 px-2 py-1 text-white" onClick={onDown}>
+        {text.down}
+      </button>
+    )}
+  </div>
+);
+
 const PostCard = ({ post, onLike, onDislike, onFavorite, onDelete, onUp, onDown }: Props) => {
   const { user } = useAuth();
   const isAdmin = user?.role === Role.admin;
@@ -28,28 +66,17 @@ const PostCard = ({ post, onLike, onDislike, onFavorite, onDelete, onUp, onDown 
       <p className="mb-2 text-sm">
         {post.comments?.length} {text.comments.toLowerCase()}
       </p>
-      <div className="flex justify-between">
-        <div className="mt-2 flex justify-end gap-2">
-          {onLike && <button onClick={() => onLike(post.id)}>👍 {post.likes}</button>}
-          {onDislike && <button onClick={() => onDislike(post.id)}>👎 {post.dislikes}</button>}
-          <button onClick={() => onFavorite(post.id)}>{post.favorite ? '★' : '☆'}</button>
-          {onDelete && isEditable && <button onClick={() => onDelete(post.id)}>🗑️</button>}
-        </div>
-        {isAdmin && (
-          <div className="flex items-center gap-4">
-            {onUp && (
-              <button onClick={onUp} className="w-fit rounded bg-blue-500 px-2 py-1 text-white">
-                {text.up}
-              </button>
-            )}
-            {onDown && (
-              <button onClick={onDown} className="w-fit rounded bg-blue-500 px-2 py-1 text-white">
-                {text.down}
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+
+      <PostActions
+        post={post}
+        isEditable={isEditable}
+        onLike={onLike}
+        onDislike={onDislike}
+        onFavorite={onFavorite}
+        onDelete={onDelete}
+      />
+
+      {isAdmin && <PostAdminControls onUp={onUp} onDown={onDown} />}
     </div>
   );
 };

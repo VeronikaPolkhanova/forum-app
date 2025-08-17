@@ -5,35 +5,32 @@ import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
   const { user, logout } = useAuth();
-
   if (!user) return null;
+
+  const links = [
+    { to: '/', label: text.posts },
+    { to: '/favorites', label: text.favorites },
+    { to: '/profile', label: text.edit },
+  ];
+
+  if (user.role === Role.admin) {
+    links.push({ to: '/users', label: text.users });
+  }
 
   return (
     <header className="flex items-center justify-between bg-blue-500 p-4 text-white">
       <nav className="flex gap-4">
-        <Link to="/" className="hover:underline">
-          {text.posts}
-        </Link>
-        <Link to="/favorites" className="hover:underline">
-          {text.favorites}
-        </Link>
-        <Link to="/profile" className="hover:underline">
-          {text.edit}
-        </Link>
-        {user.role === Role.admin && (
-          <Link to="/users" className="hover:underline">
-            {text.users}
+        {links.map((link) => (
+          <Link key={link.to} to={link.to} className="hover:underline">
+            {link.label}
           </Link>
-        )}
+        ))}
       </nav>
-      <div className="flex items-center gap-4">
-        <p>
+      <div className="flex items-center gap-3">
+        <span>
           {text.welcome} {user.name}!
-        </p>
-        <button
-          onClick={logout}
-          className="rounded border border-white bg-blue-500 px-4 py-1 text-white"
-        >
+        </span>
+        <button onClick={logout} className="rounded border px-3 py-1">
           {text.logout}
         </button>
       </div>
