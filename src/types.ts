@@ -24,6 +24,8 @@ export interface Post {
   dislikes: number;
   favorite: boolean;
   comments?: Comment[];
+  likedBy: number[];
+  dislikedBy: number[];
 }
 
 export interface AddCommentInput {

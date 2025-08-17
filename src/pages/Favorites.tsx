@@ -3,7 +3,7 @@ import { text } from '../constants';
 import { useForum } from '../context/ForumContext';
 
 const Favorites = () => {
-  const { posts, toggleFavorite } = useForum();
+  const { posts } = useForum();
   const favorites = posts.filter((p) => p.favorite);
 
   return (
@@ -11,7 +11,7 @@ const Favorites = () => {
       {favorites.length === 0 ? (
         <p>{text.not_found}</p>
       ) : (
-        favorites.map((post) => <PostCard onFavorite={toggleFavorite} key={post.id} post={post} />)
+        favorites.map((post) => <PostCard key={post.id} post={post} />)
       )}
     </div>
   );

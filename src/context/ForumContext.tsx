@@ -10,8 +10,8 @@ interface ForumContextType {
   loading: boolean;
   error: string | null;
   addComment: (postId: number, data: AddCommentInput) => void;
-  likePost: (postId: number) => void;
-  dislikePost: (postId: number) => void;
+  likePost: (postId: number, userId: number) => void;
+  dislikePost: (postId: number, userId: number) => void;
   toggleFavorite: (postId: number) => void;
   deletePost: (postId: number) => void;
   movePost: (index: number, direction: Direction) => void;
@@ -43,6 +43,8 @@ export const ForumProvider = ({ children }: { children: ReactNode }) => {
         likes: 0,
         dislikes: 0,
         favorite: false,
+        likedBy: [] as number[],
+        dislikedBy: [] as number[],
       }));
 
       cachedPosts = postsWithComments;
@@ -72,17 +74,74 @@ export const ForumProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
-  const likePost = (postId: number) =>
-    updatePost(postId, (post) => ({
-      ...post,
-      likes: post.likes + 1,
-    }));
+  const likePost = (postId: number, userId: number) => {
+    updatePost(postId, (post) => {
+      const hasLiked = post.likedBy.includes(userId);
+      const hasDisliked = post.dislikedBy.includes(userId);
 
-  const dislikePost = (postId: number) =>
-    updatePost(postId, (post) => ({
-      ...post,
-      dislikes: post.dislikes + 1,
-    }));
+      let newLikes = post.likes;
+      let newDislikes = post.dislikes;
+      let newLikedBy = [...post.likedBy];
+      let newDislikedBy = [...post.dislikedBy];
+
+      if (hasLiked) {
+        // убрать лайк
+        newLikes -= 1;
+        newLikedBy = newLikedBy.filter((id) => id !== userId);
+      } else {
+        // добавить лайк
+        newLikes += 1;
+        newLikedBy.push(userId);
+
+        // если был дизлайк, убрать его
+        if (hasDisliked) {
+          newDislikes -= 1;
+          newDislikedBy = newDislikedBy.filter((id) => id !== userId);
+        }
+      }
+
+      return {
+        ...post,
+        likes: newLikes,
+        dislikes: newDislikes,
+        likedBy: newLikedBy,
+        dislikedBy: newDislikedBy,
+      };
+    });
+  };
+
+  const dislikePost = (postId: number, userId: number) => {
+    updatePost(postId, (post) => {
+      const hasDisliked = post.dislikedBy.includes(userId);
+      const hasLiked = post.likedBy.includes(userId);
+
+      let newLikes = post.likes;
+      let newDislikes = post.dislikes;
+      let newLikedBy = [...post.likedBy];
+      let newDislikedBy = [...post.dislikedBy];
+
+      if (hasDisliked) {
+        newDislikes -= 1;
+        newDislikedBy = newDislikedBy.filter((id) => id !== userId);
+      } else {
+        newDislikes += 1;
+        newDislikedBy.push(userId);
+
+        if (hasLiked) {
+          newLikes -= 1;
+          newLikedBy = newLikedBy.filter((id) => id !== userId);
+        }
+      }
+
+      return {
+        ...post,
+        likes: newLikes,
+        dislikes: newDislikes,
+        likedBy: newLikedBy,
+        dislikedBy: newDislikedBy,
+      };
+    });
+  };
 
   const toggleFavorite = (postId: number) =>
     updatePost(postId, (post) => ({
